@@ -2,6 +2,7 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
+RUN npm install -g npm@11   # match the npm major version the lockfile was generated with
 COPY package*.json ./
 RUN npm ci
 
