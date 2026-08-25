@@ -36,7 +36,7 @@ and `:<sha>` → SSH into the EC2 host and
 container restarts).
 
 **Required GitHub Secrets** (Settings → Secrets and variables → Actions) — the backend
-repo needs the same six:
+repo needs the same five:
 
 | Secret | Value |
 |---|---|
@@ -45,7 +45,6 @@ repo needs the same six:
 | `EC2_HOST` | EC2 public IP/DNS |
 | `EC2_USER` | `ubuntu` |
 | `EC2_SSH_KEY` | full contents of the EC2 `.pem` key |
-| `PROD_DB_PASSWORD` | used by the compose file already on the EC2 host, not referenced directly by this workflow — kept here for reference |
 
 This workflow assumes `~/ab-app/docker-compose.yml` already exists on the EC2 host — see
 the deployment notes kept alongside this project for the one-time EC2 setup.
