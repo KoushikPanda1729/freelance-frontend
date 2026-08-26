@@ -4,6 +4,7 @@ import type {
   AddressLevel,
   AddressNode,
   AuditLogEntry,
+  ChatMessage,
   NodeStatus,
   Paginated,
   ResolveResponse,
@@ -122,6 +123,11 @@ export const addressApi = createApi({
       query: (params) => ({ url: "/search", params }),
       providesTags: ["Search"],
     }),
+
+    sendChatMessage: builder.mutation<string, { messages: ChatMessage[] }>({
+      query: (body) => ({ url: "/chat", method: "POST", body }),
+      transformResponse: (res: { reply: string }) => res.reply,
+    }),
   }),
 });
 
@@ -143,4 +149,5 @@ export const {
   useAdminCorrectMutation,
   useAdminAuditLogQuery,
   useSearchAddressesQuery,
+  useSendChatMessageMutation,
 } = addressApi;

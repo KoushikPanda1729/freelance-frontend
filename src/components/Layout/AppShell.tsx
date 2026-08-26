@@ -36,6 +36,7 @@ import DarkModeIcon from "@mui/icons-material/DarkModeOutlined";
 import LightModeIcon from "@mui/icons-material/LightModeOutlined";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { closeSnackbar, setRole, toggleMode } from "../../app/uiSlice";
+import ChatWidget from "../ChatWidget/ChatWidget";
 
 const DRAWER_WIDTH = 260;
 
@@ -209,6 +210,8 @@ export default function AppShell() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      <ChatWidget />
     </Box>
   );
 }

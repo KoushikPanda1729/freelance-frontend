@@ -15,6 +15,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircleOutline";
 import BlockIcon from "@mui/icons-material/BlockOutlined";
 import MergeTypeIcon from "@mui/icons-material/MergeTypeOutlined";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrowsOutlined";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import {
   useAdminSearchNodesQuery,
   useAdminUpdateNodeMutation,
@@ -105,48 +106,55 @@ function PendingRow({ node }: { node: AddressNode }) {
                 <Typography variant="caption" color="text.secondary">
                   Possible matches already in the master — compare before approving as new:
                 </Typography>
-                {candidates.map((c) => (
-                  <Paper
-                    key={c.id}
-                    variant="outlined"
-                    sx={{
-                      p: 1.5,
-                      borderLeft: 4,
-                      borderLeftColor: `${scoreColor(c.score)}.main`,
-                    }}
-                  >
-                    <Stack
-                      direction={{ xs: "column", sm: "row" }}
-                      spacing={1.5}
-                      alignItems={{ sm: "center" }}
-                      justifyContent="space-between"
+                {candidates.map((c) => {
+                  const color = c.aiSuggested ? "secondary" : scoreColor(c.score);
+                  return (
+                    <Paper
+                      key={c.id}
+                      variant="outlined"
+                      sx={{
+                        p: 1.5,
+                        borderLeft: 4,
+                        borderLeftColor: `${color}.main`,
+                      }}
                     >
-                      <Stack direction="row" spacing={1.5} alignItems="center">
-                        <CompareArrowsIcon fontSize="small" color="disabled" />
-                        <Box>
-                          <Typography fontWeight={700}>{c.name}</Typography>
-                          <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.25 }}>
-                            <Chip
-                              size="small"
-                              color={scoreColor(c.score)}
-                              label={`${Math.round(c.score * 100)}% match`}
-                            />
-                            <Chip size="small" variant="outlined" label={c.status} />
-                          </Stack>
-                        </Box>
-                      </Stack>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color={scoreColor(c.score)}
-                        startIcon={<MergeTypeIcon />}
-                        onClick={() => mergeInto(c)}
+                      <Stack
+                        direction={{ xs: "column", sm: "row" }}
+                        spacing={1.5}
+                        alignItems={{ sm: "center" }}
+                        justifyContent="space-between"
                       >
-                        Merge into this
-                      </Button>
-                    </Stack>
-                  </Paper>
-                ))}
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                          {c.aiSuggested ? (
+                            <AutoAwesomeIcon fontSize="small" color="secondary" />
+                          ) : (
+                            <CompareArrowsIcon fontSize="small" color="disabled" />
+                          )}
+                          <Box>
+                            <Typography fontWeight={700}>{c.name}</Typography>
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.25 }}>
+                              <Chip
+                                size="small"
+                                color={color}
+                                label={c.aiSuggested ? "AI suggested match" : `${Math.round(c.score * 100)}% match`}
+                              />
+                              <Chip size="small" variant="outlined" label={c.status} />
+                            </Stack>
+                          </Box>
+                        </Stack>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color={color}
+                          startIcon={<MergeTypeIcon />}
+                          onClick={() => mergeInto(c)}
+                        >
+                          Merge into this
+                        </Button>
+                      </Stack>
+                    </Paper>
+                  );
+                })}
               </Stack>
             )}
           </Box>

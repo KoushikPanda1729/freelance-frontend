@@ -23,6 +23,7 @@ import RuleIcon from "@mui/icons-material/RuleOutlined";
 import HistoryIcon from "@mui/icons-material/HistoryOutlined";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import type { AddressLevel, AddressNode, AuditLogEntry, ScoredNode } from "../../api/types";
 import {
   useAdminSearchNodesQuery,
@@ -275,25 +276,35 @@ function CorrectWrongAddressTab() {
           <Typography variant="caption" color="text.secondary">
             Suggested matches for "{wrong.name}"
           </Typography>
-          {suggested.map((s) => (
-            <Paper
-              key={s.id}
-              variant="outlined"
-              onClick={() => setCorrect(s)}
-              sx={{
-                p: 1.5,
-                cursor: "pointer",
-                borderLeft: 4,
-                borderLeftColor: `${scoreColor(s.score)}.main`,
-                "&:hover": { bgcolor: "action.hover" },
-              }}
-            >
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography fontWeight={600}>{s.name}</Typography>
-                <Chip size="small" color={scoreColor(s.score)} label={`${Math.round(s.score * 100)}% match`} />
-              </Stack>
-            </Paper>
-          ))}
+          {suggested.map((s) => {
+            const color = s.aiSuggested ? "secondary" : scoreColor(s.score);
+            return (
+              <Paper
+                key={s.id}
+                variant="outlined"
+                onClick={() => setCorrect(s)}
+                sx={{
+                  p: 1.5,
+                  cursor: "pointer",
+                  borderLeft: 4,
+                  borderLeftColor: `${color}.main`,
+                  "&:hover": { bgcolor: "action.hover" },
+                }}
+              >
+                <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    {s.aiSuggested && <AutoAwesomeIcon fontSize="small" color="secondary" />}
+                    <Typography fontWeight={600}>{s.name}</Typography>
+                  </Stack>
+                  <Chip
+                    size="small"
+                    color={color}
+                    label={s.aiSuggested ? "AI suggested" : `${Math.round(s.score * 100)}% match`}
+                  />
+                </Stack>
+              </Paper>
+            );
+          })}
         </Stack>
       )}
 

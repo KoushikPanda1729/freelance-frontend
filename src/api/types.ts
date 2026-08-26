@@ -21,6 +21,8 @@ export interface AddressNode {
 
 export interface ScoredNode extends AddressNode {
   score: number;
+  /** True when this candidate was found by the AI semantic matcher, not text similarity - it won't have a meaningful score. */
+  aiSuggested?: boolean;
 }
 
 export type ResolveResponse =
@@ -74,6 +76,11 @@ export interface Paginated<T> {
   total: number;
   page: number;
   pageSize: number;
+}
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
 }
 
 export const ENTITY_TYPES = [
