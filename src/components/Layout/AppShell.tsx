@@ -68,14 +68,16 @@ export default function AppShell() {
   const mode = useAppSelector((s) => s.ui.mode);
   const snackbar = useAppSelector((s) => s.ui.snackbar);
 
-  // The URL is the source of truth for role: landing on/navigating to any /admin/*
-  // route (typed URL, bookmark, browser back/forward, or a refresh) must keep you in
-  // admin mode - otherwise API calls would go out with the wrong x-user-role header.
+  // Landing on/navigating to any /admin/* route (typed URL, bookmark, browser
+  // back/forward, or a refresh) must keep you in admin mode - otherwise API calls
+  // would go out with the wrong x-user-role header and 403. This is deliberately
+  // one-directional: "/" (Dashboard) and other non-/admin routes are shared by both
+  // roles, so simply not being on an /admin/* path must NOT force role back to
+  // "user" - that would silently kick an admin back to user mode just for clicking
+  // the shared Dashboard link.
   useEffect(() => {
-    const isAdminRoute = location.pathname.startsWith("/admin");
-    const expectedRole = isAdminRoute ? "admin" : "user";
-    if (role !== expectedRole) {
-      dispatch(setRole(expectedRole));
+    if (location.pathname.startsWith("/admin") && role !== "admin") {
+      dispatch(setRole("admin"));
     }
   }, [location.pathname, role, dispatch]);
 
@@ -159,12 +161,16 @@ export default function AppShell() {
         </Toolbar>
       </AppBar>
 
-      <Box component="nav" sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}>
+      <Box component="nav" sx={{ width: { md: DRAWER_WIDTH }, minWidth: 0, flexShrink: { md: 0 } }}>
         <Drawer
           variant={isMdUp ? "permanent" : "temporary"}
           open={isMdUp ? true : mobileOpen}
           onClose={() => setMobileOpen(false)}
-          ModalProps={{ keepMounted: true }}
+          // disableScrollLock: MUI's Modal otherwise adds padding-right to <body> to
+          // compensate for the hidden scrollbar while the mobile drawer is open, and
+          // that padding can get stuck - which shrinks every page's right-hand edge
+          // uniformly, exactly what looked like "no padding on the right, everywhere."
+          ModalProps={{ keepMounted: true, disableScrollLock: true }}
           sx={{
             "& .MuiDrawer-paper": { boxSizing: "border-box", width: DRAWER_WIDTH },
           }}
@@ -173,9 +179,22 @@ export default function AppShell() {
         </Drawer>
       </Box>
 
-      <Box component="main" sx={{ flexGrow: 1, width: { md: `calc(100% - ${DRAWER_WIDTH}px)` } }}>
+      {/* minWidth: 0 overrides the flex item's default min-width:auto, which otherwise lets
+          this refuse to shrink below its content's natural width (e.g. Grid's internal
+          negative-margin layout) and can force the whole row wider than the viewport -
+          the overflow-hidden safety net then clips that overflow from the right, which is
+          exactly what looked like "no right padding, everywhere" on mobile. */}
+      <Box component="main" sx={{ flexGrow: 1, minWidth: 0, width: { md: `calc(100% - ${DRAWER_WIDTH}px)` } }}>
         <Toolbar />
-        <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 1200, mx: "auto" }}>
+        <Box
+          sx={{
+            px: { xs: 2.5, sm: 3, md: 4 },
+            py: { xs: 2, sm: 3, md: 4 },
+            maxWidth: 1200,
+            mx: "auto",
+            overflowX: "hidden",
+          }}
+        >
           <Outlet />
         </Box>
       </Box>

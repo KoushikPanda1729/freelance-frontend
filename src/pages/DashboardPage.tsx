@@ -46,7 +46,7 @@ export default function DashboardPage() {
           pending review queue and get standardised — with every linked record relinked automatically on merge.
         </Typography>
         {role === "admin" && (
-          <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
+          <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
             <Chip icon={<PendingActionsIcon />} label={`${pending?.total ?? 0} pending review`} color="warning" variant="outlined" />
             <Chip icon={<MapIcon />} label={`${active?.total ?? 0} active master values`} color="success" variant="outlined" />
           </Stack>

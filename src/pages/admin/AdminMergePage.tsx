@@ -16,6 +16,8 @@ import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import LinearProgress from "@mui/material/LinearProgress";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import MergeTypeIcon from "@mui/icons-material/MergeTypeOutlined";
 import RuleIcon from "@mui/icons-material/RuleOutlined";
 import HistoryIcon from "@mui/icons-material/HistoryOutlined";
@@ -382,6 +384,8 @@ function RecentActivity() {
 
 export default function AdminMergePage() {
   const [tab, setTab] = useState(0);
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Stack spacing={3}>
@@ -401,8 +405,16 @@ export default function AdminMergePage() {
           variant="fullWidth"
           sx={{ borderBottom: 1, borderColor: "divider" }}
         >
-          <Tab icon={<MergeTypeIcon fontSize="small" />} iconPosition="start" label="Merge Duplicates" />
-          <Tab icon={<RuleIcon fontSize="small" />} iconPosition="start" label="Correct Wrong Address" />
+          <Tab
+            icon={<MergeTypeIcon fontSize="small" />}
+            iconPosition="start"
+            label={isXs ? "Merge" : "Merge Duplicates"}
+          />
+          <Tab
+            icon={<RuleIcon fontSize="small" />}
+            iconPosition="start"
+            label={isXs ? "Correct" : "Correct Wrong Address"}
+          />
         </Tabs>
         <CardContent>{tab === 0 ? <MergeDuplicatesTab /> : <CorrectWrongAddressTab />}</CardContent>
       </Card>

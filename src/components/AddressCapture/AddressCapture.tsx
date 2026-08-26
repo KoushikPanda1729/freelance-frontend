@@ -73,6 +73,10 @@ export default function AddressCapture({ initialValue, onChange, disabled, title
   };
 
   const spacing = dense ? 1.5 : 2;
+  // Slightly tighter on the smallest screens - Grid's negative-margin layout
+  // technique bleeds spacing/2 past its container on each side, which otherwise
+  // eats noticeably into the right-edge padding on a narrow phone.
+  const gridSpacing = { xs: dense ? 1 : 1.5, sm: spacing };
 
   return (
     <Stack spacing={spacing}>
@@ -81,7 +85,7 @@ export default function AddressCapture({ initialValue, onChange, disabled, title
           {title}
         </Typography>
       )}
-      <Grid container spacing={spacing}>
+      <Grid container spacing={gridSpacing}>
         <Grid item xs={12} sm={6} md={3}>
           <AddressLevelField
             level="COUNTRY"
@@ -148,7 +152,7 @@ export default function AddressCapture({ initialValue, onChange, disabled, title
 
       <Divider sx={{ my: 1 }} />
 
-      <Grid container spacing={spacing}>
+      <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
           <TextField
             fullWidth

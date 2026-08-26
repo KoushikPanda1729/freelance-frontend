@@ -12,6 +12,14 @@ const shared = {
     button: { textTransform: "none" as const, fontWeight: 600 },
   },
   components: {
+    MuiCssBaseline: {
+      // Grid's negative-margin layout technique can bleed a few px past its
+      // container on narrow screens; this guarantees it never causes an actual
+      // horizontal scrollbar/edge-clipping glitch on mobile.
+      styleOverrides: {
+        "html, body": { overflowX: "hidden" as const },
+      },
+    },
     MuiButton: {
       styleOverrides: { root: { borderRadius: 8 } },
     },
@@ -23,6 +31,18 @@ const shared = {
     },
     MuiTableCell: {
       styleOverrides: { head: { fontWeight: 700, whiteSpace: "nowrap" as const } },
+    },
+    MuiCardContent: {
+      // Default CardContent padding (16px) is barely more than Grid's negative-margin
+      // bleed inside it, so the right edge in particular ends up feeling paper-thin on
+      // phones. A touch more padding restores real breathing room on every card.
+      styleOverrides: {
+        root: {
+          padding: 20,
+          "&:last-child": { paddingBottom: 20 },
+          "@media (min-width:600px)": { padding: 24, "&:last-child": { paddingBottom: 24 } },
+        },
+      },
     },
   },
 };
