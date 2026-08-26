@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -16,6 +16,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Chip from "@mui/material/Chip";
+import Tooltip from "@mui/material/Tooltip";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -31,8 +32,10 @@ import PendingActionsIcon from "@mui/icons-material/PendingActionsOutlined";
 import MergeTypeIcon from "@mui/icons-material/MergeTypeOutlined";
 import HistoryIcon from "@mui/icons-material/HistoryOutlined";
 import SearchIcon from "@mui/icons-material/SearchOutlined";
+import DarkModeIcon from "@mui/icons-material/DarkModeOutlined";
+import LightModeIcon from "@mui/icons-material/LightModeOutlined";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { closeSnackbar, setRole } from "../../app/uiSlice";
+import { closeSnackbar, setRole, toggleMode } from "../../app/uiSlice";
 
 const DRAWER_WIDTH = 260;
 
@@ -62,7 +65,19 @@ export default function AppShell() {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const role = useAppSelector((s) => s.ui.role);
+  const mode = useAppSelector((s) => s.ui.mode);
   const snackbar = useAppSelector((s) => s.ui.snackbar);
+
+  // The URL is the source of truth for role: landing on/navigating to any /admin/*
+  // route (typed URL, bookmark, browser back/forward, or a refresh) must keep you in
+  // admin mode - otherwise API calls would go out with the wrong x-user-role header.
+  useEffect(() => {
+    const isAdminRoute = location.pathname.startsWith("/admin");
+    const expectedRole = isAdminRoute ? "admin" : "user";
+    if (role !== expectedRole) {
+      dispatch(setRole(expectedRole));
+    }
+  }, [location.pathname, role, dispatch]);
 
   const nav = role === "admin" ? [...ENTRY_NAV.slice(0, 1), ...ADMIN_NAV] : ENTRY_NAV;
 
@@ -122,6 +137,11 @@ export default function AppShell() {
             variant="outlined"
             sx={{ display: { xs: "none", sm: "flex" } }}
           />
+          <Tooltip title={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
+            <IconButton onClick={() => dispatch(toggleMode())} size="small">
+              {mode === "dark" ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
           <ToggleButtonGroup
             size="small"
             exclusive

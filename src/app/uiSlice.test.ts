@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import uiReducer, { closeSnackbar, notify, setRole } from "./uiSlice";
+import uiReducer, { closeSnackbar, notify, setMode, setRole, toggleMode } from "./uiSlice";
 
 describe("uiSlice", () => {
   it("defaults to the user role", () => {
@@ -36,5 +36,22 @@ describe("uiSlice", () => {
     const closed = uiReducer(opened, closeSnackbar());
     expect(closed.snackbar.open).toBe(false);
     expect(closed.snackbar.message).toBe("Saved");
+  });
+
+  it("defaults to light mode and toggles to dark and back", () => {
+    const initial = uiReducer(undefined, { type: "@@INIT" });
+    expect(initial.mode).toBe("light");
+
+    const dark = uiReducer(initial, toggleMode());
+    expect(dark.mode).toBe("dark");
+
+    const light = uiReducer(dark, toggleMode());
+    expect(light.mode).toBe("light");
+  });
+
+  it("sets an explicit mode", () => {
+    const initial = uiReducer(undefined, { type: "@@INIT" });
+    const next = uiReducer(initial, setMode("dark"));
+    expect(next.mode).toBe("dark");
   });
 });

@@ -5,18 +5,17 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { store } from "./app/store";
-import { theme } from "./theme/theme";
 import App from "./App";
+import ThemedApp from "./ThemedApp";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
+      <BrowserRouter>
+        <ThemedApp>
           <App />
-        </BrowserRouter>
-      </ThemeProvider>
+        </ThemedApp>
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );
