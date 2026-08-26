@@ -63,6 +63,7 @@ export default function AdminSearchPage() {
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <TextField
             fullWidth
+            size="small"
             label="Search clean address"
             placeholder="e.g. Sector 62, Gurugram..."
             value={q}
