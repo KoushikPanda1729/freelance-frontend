@@ -25,6 +25,8 @@ import { useAdminSearchNodesQuery, useAdminUpdateNodeMutation } from "../../api/
 import { useAppDispatch } from "../../app/hooks";
 import { notify } from "../../app/uiSlice";
 import NodeFormDialog from "./NodeFormDialog";
+import NodeHistoryDialog from "./NodeHistoryDialog";
+import HistoryIcon from "@mui/icons-material/HistoryOutlined";
 
 const LEVELS: (AddressLevel | "")[] = ["", "COUNTRY", "STATE", "CITY", "PINCODE", "AREA", "SUBAREA"];
 const STATUSES: (NodeStatus | "")[] = ["", "ACTIVE", "PENDING", "MERGED", "INACTIVE"];
@@ -45,6 +47,7 @@ export default function AdminMasterPage() {
   const pageSize = 10;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<AddressNode | null>(null);
+  const [historyNodeId, setHistoryNodeId] = useState<string | null>(null);
 
   const { data, isFetching } = useAdminSearchNodesQuery({
     level: level || undefined,
@@ -159,8 +162,40 @@ export default function AdminMasterPage() {
                   <TableCell>
                     <Chip size="small" label={node.status} color={STATUS_COLOR[node.status]} />
                   </TableCell>
-                  <TableCell align="center">{node._count?.aliases ?? 0}</TableCell>
-                  <TableCell align="center">{node._count?.mergedFrom ?? 0}</TableCell>
+                  <TableCell align="center">
+                    {(node._count?.aliases ?? 0) > 0 ? (
+                      <Chip
+                        size="small"
+                        label={node._count?.aliases}
+                        icon={<HistoryIcon />}
+                        color="info"
+                        variant="outlined"
+                        clickable
+                        onClick={() => setHistoryNodeId(node.id)}
+                      />
+                    ) : (
+                      <Typography variant="body2" color="text.disabled">
+                        0
+                      </Typography>
+                    )}
+                  </TableCell>
+                  <TableCell align="center">
+                    {(node._count?.mergedFrom ?? 0) > 0 ? (
+                      <Chip
+                        size="small"
+                        label={node._count?.mergedFrom}
+                        icon={<HistoryIcon />}
+                        color="info"
+                        variant="outlined"
+                        clickable
+                        onClick={() => setHistoryNodeId(node.id)}
+                      />
+                    ) : (
+                      <Typography variant="body2" color="text.disabled">
+                        0
+                      </Typography>
+                    )}
+                  </TableCell>
                   <TableCell align="right">
                     <Tooltip title="Edit">
                       <IconButton
@@ -210,6 +245,7 @@ export default function AdminMasterPage() {
       </Paper>
 
       <NodeFormDialog open={dialogOpen} onClose={() => setDialogOpen(false)} editingNode={editingNode} />
+      <NodeHistoryDialog nodeId={historyNodeId} onClose={() => setHistoryNodeId(null)} />
     </Stack>
   );
 }

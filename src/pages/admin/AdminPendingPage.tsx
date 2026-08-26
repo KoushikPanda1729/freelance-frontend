@@ -7,9 +7,6 @@ import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
 import Collapse from "@mui/material/Collapse";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -17,6 +14,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircleOutline";
 import BlockIcon from "@mui/icons-material/BlockOutlined";
 import MergeTypeIcon from "@mui/icons-material/MergeTypeOutlined";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrowsOutlined";
 import {
   useAdminSearchNodesQuery,
   useAdminUpdateNodeMutation,
@@ -26,6 +24,10 @@ import {
 import type { AddressNode, ScoredNode } from "../../api/types";
 import { useAppDispatch } from "../../app/hooks";
 import { notify } from "../../app/uiSlice";
+
+function scoreColor(score: number): "warning" | "info" {
+  return score >= 0.85 ? "warning" : "info";
+}
 
 function PendingRow({ node }: { node: AddressNode }) {
   const dispatch = useAppDispatch();
@@ -99,20 +101,53 @@ function PendingRow({ node }: { node: AddressNode }) {
               </Alert>
             )}
             {!isFetching && candidates && candidates.length > 0 && (
-              <List dense disablePadding>
+              <Stack spacing={1.25}>
+                <Typography variant="caption" color="text.secondary">
+                  Possible matches already in the master — compare before approving as new:
+                </Typography>
                 {candidates.map((c) => (
-                  <ListItem
+                  <Paper
                     key={c.id}
-                    secondaryAction={
-                      <Button size="small" onClick={() => mergeInto(c)}>
+                    variant="outlined"
+                    sx={{
+                      p: 1.5,
+                      borderLeft: 4,
+                      borderLeftColor: `${scoreColor(c.score)}.main`,
+                    }}
+                  >
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      spacing={1.5}
+                      alignItems={{ sm: "center" }}
+                      justifyContent="space-between"
+                    >
+                      <Stack direction="row" spacing={1.5} alignItems="center">
+                        <CompareArrowsIcon fontSize="small" color="disabled" />
+                        <Box>
+                          <Typography fontWeight={700}>{c.name}</Typography>
+                          <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.25 }}>
+                            <Chip
+                              size="small"
+                              color={scoreColor(c.score)}
+                              label={`${Math.round(c.score * 100)}% match`}
+                            />
+                            <Chip size="small" variant="outlined" label={c.status} />
+                          </Stack>
+                        </Box>
+                      </Stack>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color={scoreColor(c.score)}
+                        startIcon={<MergeTypeIcon />}
+                        onClick={() => mergeInto(c)}
+                      >
                         Merge into this
                       </Button>
-                    }
-                  >
-                    <ListItemText primary={c.name} secondary={`${Math.round(c.score * 100)}% similar · ${c.status}`} />
-                  </ListItem>
+                    </Stack>
+                  </Paper>
                 ))}
-              </List>
+              </Stack>
             )}
           </Box>
         </Collapse>
